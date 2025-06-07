@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Student Attendance</title>
+  <link rel="stylesheet" href="student1.css">
+</head>
+<body class="students-body">
+  <div class="students-container">
+    
+    <div class="top-bar">
+      <input type="date" id="attendanceDate" />
+      <p id="selectedDateDisplay" style="margin-top: 10px; font-weight: bold;"></p>
+      <input type="text" id="studentSearch" placeholder="Search student by name..." />
+    </div>
+
+    <table id="studentsTable">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Roll No</th>
+          <th>Email</th>
+          <th>Department</th>
+          <th>Attendance</th>
+        </tr>
+      </thead>
+      <tbody id="studentsData">
+        <tr>
+          <td>Harish Kumar</td>
+          <td>21BCS001</td>
+          <td>harish@example.com</td>
+          <td>CSE</td>
+          <td><input type="checkbox" class="attendance" /> Present</td>
+        </tr>
+        <tr>
+          <td>Anjali Sharma</td>
+          <td>21BCS002</td>
+          <td>anjali@example.com</td>
+          <td>IT</td>
+          <td><input type="checkbox" class="attendance" /> Present</td>
+        </tr>
+        <tr>
+          <td>Rahul Singh</td>
+          <td>21BCS003</td>
+          <td>rahul@example.com</td>
+          <td>ECE</td>
+          <td><input type="checkbox" class="attendance" /> Present</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    // Handle student name search
+    const searchInput = document.getElementById("studentSearch");
+    const tableRows = document.querySelectorAll("#studentsData tr");
+
+    searchInput.addEventListener("input", function () {
+      const searchValue = searchInput.value.toLowerCase();
+      tableRows.forEach(row => {
+        const nameCell = row.querySelector("td").textContent.toLowerCase();
+        row.style.display = nameCell.includes(searchValue) ? "" : "none";
+      });
+    });
+
+    // Display selected date
+    const attendanceDate = document.getElementById("attendanceDate");
+    const selectedDateDisplay = document.getElementById("selectedDateDisplay");
+
+    attendanceDate.addEventListener("change", function () {
+      if (attendanceDate.value) {
+        const selected = new Date(attendanceDate.value);
+        selectedDateDisplay.textContent = `Attendance for: ${selected.toDateString()}`;
+      } else {
+        selectedDateDisplay.textContent = "";
+      }
+    });
+  </script>
+  <script src="https://www.gstatic.com/firebasejs/10.3.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.3.1/firebase-firestore.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "SENDER_ID",
+      appId: "APP_ID"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+  </script>
+
+  <!-- Optional: Link your custom JS file if you keep Firebase functions in a separate file -->
+  <script src="your-script.js"></script>
+</body>
+</html>
