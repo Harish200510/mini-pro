@@ -9,12 +9,29 @@
 <body>
   <div class="form-container">
     <h2>Login</h2>
-    <form action="/login" method="post">
-      <input type="email" name="email" placeholder="Email" required />
-      <input type="password" name="password" placeholder="Password" required />
+    <form id="loginForm">
+      <input type="email" id="email" placeholder="Email" required />
+      <input type="password" id="password" placeholder="Password" required />
       <button type="submit">Login</button>
       <p>Don't have an account? <a href="signup.html">Signup</a></p>
     </form>
   </div>
+
+  <script>
+    document.getElementById("loginForm").addEventListener("submit", function (e) {
+      e.preventDefault(); // Stop form from reloading the page
+
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      // ✅ Dummy credentials check
+      if (email === "student@example.com" && password === "1234") {
+        // Redirect to dashboard
+        window.location.href = "dashboard.html";
+      } else {
+        alert("Invalid email or password.");
+      }
+    });
+  </script>
 </body>
 </html>
