@@ -11,9 +11,22 @@
     <h1>Welcome to the College Portal</h1>
     <p class="subtitle">Search for your college below</p>
     <div class="search-box">
-      <input type="text" placeholder="Enter your college name..." />
-      <button type="submit">Search</button>
+      <input type="text" id="collegeInput" placeholder="Enter your college name..." />
+      <button type="button" onclick="goToAttendance()">Search</button>
     </div>
   </div>
+
+  <script>
+    function goToAttendance() {
+      const collegeName = document.getElementById("collegeInput").value.trim();
+
+      if (collegeName !== "") {
+        // Navigate to student attendance page
+        window.location.href = "student1.html";
+      } else {
+        alert("Please enter a college name.");
+      }
+    }
+  </script>
 </body>
 </html>
