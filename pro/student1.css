@@ -1,0 +1,75 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f6f8;
+  margin: 0;
+  padding: 0;
+}
+
+.students-container {
+  max-width: 960px;
+  margin: 30px auto;
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.top-bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.top-bar input[type="text"],
+.top-bar input[type="date"] {
+  flex: 1;
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  min-width: 220px;
+}
+
+#studentsTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+#studentsTable thead {
+  background-color: #007bff;
+  color: white;
+}
+
+#studentsTable th,
+#studentsTable td {
+  padding: 12px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+#studentsTable td label {
+  margin-right: 15px;
+  cursor: pointer;
+}
+
+input[type="checkbox"] {
+  transform: scale(1.2);
+  margin-right: 5px;
+  cursor: pointer;
+}
+
+@media (max-width: 600px) {
+  .top-bar {
+    flex-direction: column;
+  }
+
+  .top-bar input {
+    width: 100%;
+  }
+
+  #studentsTable th, #studentsTable td {
+    font-size: 14px;
+  }
+}

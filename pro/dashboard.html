@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>College Search</title>
+  <link rel="stylesheet" href="dashboard.css" />
+</head>
+<body class="dashboard-body">
+  <div class="dashboard-container">
+    <h1>Welcome to the College Portal</h1>
+    <p class="subtitle">Search for your college below</p>
+    <div class="search-box">
+      <input type="text" id="collegeInput" placeholder="Enter your college name..." />
+      <button type="button" id="searchBtn">Search</button>
+    </div>
+    <p id="error-msg" style="color:red;"></p>
+    <button id="logoutBtn">Logout</button>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.3.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.3.1/firebase-auth.js"></script>
+
+  <script>
+    // Firebase config - replace with yours
+    const firebaseConfig = {
+     apiKey: "AIzaSyBaAvD5F5RWlnJsG_wg1B5qpP2r8Yp0rbY",
+    authDomain: "collegeattendanceapp-b8903.firebaseapp.com",
+    projectId: "collegeattendanceapp-b8903",
+    storageBucket: "collegeattendanceapp-b8903.firebasestorage.app",
+    messagingSenderId: "218095249582",
+    appId: "1:218095249582:web:6a34a9651ea9d91baee53f",
+    measurementId: "G-TBH7Y8J406"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    const searchBtn = document.getElementById("searchBtn");
+    const collegeInput = document.getElementById("collegeInput");
+    const errorMsg = document.getElementById("error-msg");
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    // Redirect to login if not logged in
+    auth.onAuthStateChanged(user => {
+      if (!user) {
+        window.location.href = "login.html";
+      }
+    });
+
+    searchBtn.addEventListener("click", () => {
+      errorMsg.textContent = "";
+      const collegeName = collegeInput.value.trim().toLowerCase();
+
+      if (collegeName === "vellore institute of technology") {
+        window.location.href = "student1.html";
+      } else {
+        errorMsg.textContent = "Please enter a valid college name (Vellore Institute of Technology).";
+      }
+    });
+
+    logoutBtn.addEventListener("click", () => {
+      auth.signOut().then(() => {
+        window.location.href = "login.html";
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Student Attendance</title>
+  <link rel="stylesheet" href="student1.css" />
+</head>
+<body class="students-body">
+  <div class="students-container">
+    <div class="top-bar">
+      <input type="date" id="attendanceDate" max="" />
+      <p id="selectedDateDisplay" style="margin-top: 10px; font-weight: bold;"></p>
+      <input type="text" id="studentSearch" placeholder="Search student by name..." />
+    </div>
+
+    <table id="studentsTable">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Roll No</th>
+          <th>Email</th>
+          <th>Department</th>
+          <th>Attendance</th>
+        </tr>
+      </thead>
+      <tbody id="studentsData">
+        <tr>
+          <td>Harish Kumar</td>
+          <td>21BCS001</td>
+          <td>harish@example.com</td>
+          <td>CSE</td>
+          <td>
+            <label><input type="checkbox" class="present" /> Present</label>
+            <label><input type="checkbox" class="absent" /> Absent</label>
+          </td>
+        </tr>
+        <tr>
+          <td>Anjali Sharma</td>
+          <td>21BCS002</td>
+          <td>anjali@example.com</td>
+          <td>IT</td>
+          <td>
+            <label><input type="checkbox" class="present" /> Present</label>
+            <label><input type="checkbox" class="absent" /> Absent</label>
+          </td>
+        </tr>
+        <tr>
+          <td>Rahul Singh</td>
+          <td>21BCS003</td>
+          <td>rahul@example.com</td>
+          <td>ECE</td>
+          <td>
+            <label><input type="checkbox" class="present" /> Present</label>
+            <label><input type="checkbox" class="absent" /> Absent</label>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <button id="saveAttendanceBtn">Save Attendance</button>
+    <p id="saveMsg" style="color: green; font-weight: bold;"></p>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.3.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.3.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.3.1/firebase-firestore.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBaAvD5F5RWlnJsG_wg1B5qpP2r8Yp0rbY",
+    authDomain: "collegeattendanceapp-b8903.firebaseapp.com",
+    projectId: "collegeattendanceapp-b8903",
+    storageBucket: "collegeattendanceapp-b8903.firebasestorage.app",
+    messagingSenderId: "218095249582",
+    appId: "1:218095249582:web:6a34a9651ea9d91baee53f",
+    measurementId: "G-TBH7Y8J406"
+    };
+    firebase.initializeApp(firebaseConfig);
+
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    // Redirect to login if not authenticated
+    auth.onAuthStateChanged(user => {
+      if (!user) {
+        window.location.href = "login.html";
+      }
+    });
+
+    const attendanceDateInput = document.getElementById("attendanceDate");
+    const selectedDateDisplay = document.getElementById("selectedDateDisplay");
+    const studentsData = document.getElementById("studentsData");
+    const saveAttendanceBtn = document.getElementById("saveAttendanceBtn");
+    const saveMsg = document.getElementById("saveMsg");
+    const searchInput = document.getElementById("studentSearch");
+    const tableRows = document.querySelectorAll("#studentsData tr");
+
+    // Set max date to today
+    attendanceDateInput.max = new Date().toISOString().split("T")[0];
+    
+    // Set default date to today
+    attendanceDateInput.value = new Date().toISOString().split("T")[0];
+
+    // Function to load attendance from Firestore for selected date
+    async function loadAttendance(dateStr) {
+      saveMsg.textContent = "";
+      selectedDateDisplay.textContent = `Attendance for: ${new Date(dateStr).toDateString()}`;
+
+      // Get attendance doc for that date
+      const attendanceDoc = await db.collection("attendance").doc(dateStr).get();
+
+      if (attendanceDoc.exists) {
+        const attendanceData = attendanceDoc.data();
+        // For each row, set checkbox state
+        [...studentsData.rows].forEach(row => {
+          const rollNo = row.cells[1].textContent;
+          const status = attendanceData[rollNo];
+          const presentCheckbox = row.querySelector(".present");
+          const absentCheckbox = row.querySelector(".absent");
+
+          if (status === "present") {
+            presentCheckbox.checked = true;
+            absentCheckbox.checked = false;
+          } else if (status === "absent") {
+            presentCheckbox.checked = false;
+            absentCheckbox.checked = true;
+          } else {
+            presentCheckbox.checked = false;
+            absentCheckbox.checked = false;
+          }
+        });
+      } else {
+        // No attendance data for this date: uncheck all
+        [...studentsData.rows].forEach(row => {
+          row.querySelector(".present").checked = false;
+          row.querySelector(".absent").checked = false;
+        });
+      }
+    }
+
+    // Load attendance initially
+    loadAttendance(attendanceDateInput.value);
+
+    // When date changes, load attendance for that date
+    attendanceDateInput.addEventListener("change", () => {
+      const selectedDate = attendanceDateInput.value;
+      if (selectedDate > new Date().toISOString().split("T")[0]) {
+        alert("You cannot select a future date.");
+        attendanceDateInput.value = new Date().toISOString().split("T")[0];
+        return;
+      }
+      loadAttendance(selectedDate);
+    });
+
+    // Enforce only one checkbox checked (Present or Absent) per student
+    studentsData.querySelectorAll("input.present").forEach(chk => {
+      chk.addEventListener("change", (e) => {
+        if (e.target.checked) {
+          e.target.closest("td").querySelector("input.absent").checked = false;
+        }
+      });
+    });
+    studentsData.querySelectorAll("input.absent").forEach(chk => {
+      chk.addEventListener("change", (e) => {
+        if (e.target.checked) {
+          e.target.closest("td").querySelector("input.present").checked = false;
+        }
+      });
+    });
+
+    // Search students by name
+    searchInput.addEventListener("input", function () {
+      const searchValue = searchInput.value.toLowerCase();
+      [...studentsData.rows].forEach(row => {
+        const nameCell = row.cells[0].textContent.toLowerCase();
+        row.style.display = nameCell.includes(searchValue) ? "" : "none";
+      });
+    });
+
+    // Save attendance data to Firestore
+    saveAttendanceBtn.addEventListener("click", async () => {
+      const dateStr = attendanceDateInput.value;
+      const attendanceObj = {};
+
+      [...studentsData.rows].forEach(row => {
+        const rollNo = row.cells[1].textContent;
+        const present = row.querySelector(".present").checked;
+        const absent = row.querySelector(".absent").checked;
+
+        if (present) attendanceObj[rollNo] = "present";
+        else if (absent) attendanceObj[rollNo] = "absent";
+        else attendanceObj[rollNo] = "not marked";
+      });
+
+      try {
+        await db.collection("attendance").doc(dateStr).set(attendanceObj);
+        saveMsg.textContent = "Attendance saved successfully!";
+      } catch (error) {
+        saveMsg.style.color = "red";
+        saveMsg.textContent = "Error saving attendance: " + error.message;
+      }
+    });
+  </script>
+</body>
+</html>
